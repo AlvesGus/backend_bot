@@ -1,8 +1,9 @@
 import express from "express";
 import cors from "cors";
 import { prisma } from "../lib/prisma.js";
-import {dotenv} from 'dotenv';
-dotenv.config();
+import "dotenv/config";
+
+console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
 app.use(express.json());
@@ -13,7 +14,7 @@ app.use(
   })
 );
 
-app.get("/health", (req, res) => {
+app.get("/api/health", (req, res) => {
   res.status(200).send({ message: "API is healthy" });
 });
 
@@ -32,6 +33,35 @@ app.get("/api/transactions", async (req, res) => {
 });
 
 app.post("/api/add-transaction", async (req, res) => {
+  const { title, amount, type, category, telegram_id, name_user} = req.body;
+  try {
+    const data = await prisma.transaction.create({
+      data: { title, amount, type, category, telegram_id, name_user}
+    })
+
+    res.status(201).send({ message: "Transaction added successfully", data });
+    
+  } catch (error) {
+    console.log(error);
+    res.status(500).send({ error: "Failed to add transaction" });
+  }
+
+})
+
+app.delete("/api/delete-transaction/:id", async (req, res) => {
+  const {id} = req.params
+
+  try {
+    await prisma.transaction.delete({
+      where: { id: String(id) }
+    })
+
+    res.status(200).send({ message: "Transaction deleted successfully"});
+
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({ error: "Failed to delete transaction" });
+  }
 
 })
 
