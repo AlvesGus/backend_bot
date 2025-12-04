@@ -14,9 +14,16 @@ model Transaction {
   title       String
   amount      Float
   type        String
-  category    String
+  category    category
   telegram_id String  
   name_user    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+
+enum category {
+  Entrada
+  Saida
+  Investimento
 }
