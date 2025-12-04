@@ -139,6 +139,24 @@ app.get("/api/balance/period", async (req, res) => {
   }
 });
 
+app.get("/api/investment", async (req, res) => {
+  try {
+
+    const investment = await prisma.transaction.aggregate({
+      _sum: {
+        amount: true
+      },
+      where: {
+        category: 'Investimento'
+      }
+    })
+    
+  } catch (error) {
+    console.log(error)
+    res.status(500).send({message: 'Erro ao buscar os dados.'})
+  }
+})
+
 app.delete("/api/delete-transaction/:id", async (req, res) => {
   const { id } = req.params;
 
