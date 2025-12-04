@@ -151,7 +151,6 @@ app.get("/api/investment", async (req, res) => {
 
     return res.status(200).json({ 
       Investimentos: {
-        title,
         investido: invested,
       }
       
