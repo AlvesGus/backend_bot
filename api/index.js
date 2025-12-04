@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { prisma } from "../lib/prisma.js";
 import "dotenv/config";
+import { category } from "@prisma/client";
 
 console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
@@ -148,7 +149,14 @@ app.get("/api/investment", async (req, res) => {
 
     const invested = Number(investments._sum.amount) || 0;
 
-    return res.status(200).json({ investido: invested });
+    return res.status(200).json({ 
+      Investimentos: {
+        title,
+        investido: invested,
+      }
+      
+      
+     });
 
   } catch (error) {
     console.error("Erro ao buscar investimento:", error);
