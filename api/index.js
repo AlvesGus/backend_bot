@@ -142,7 +142,7 @@ app.get("/api/balance/period", async (req, res) => {
 app.get("/api/investment", async (req, res) => {
   try {
 
-    const investment = await prisma.transaction.aggregate({
+    const investments = await prisma.transaction.aggregate({
       _sum: {
         amount: true
       },
@@ -150,6 +150,7 @@ app.get("/api/investment", async (req, res) => {
         category: 'Investimento'
       }
     })
+     const investment = investments._sum.amount || 0;
 
     res.status(200).json({
       investido: investment
