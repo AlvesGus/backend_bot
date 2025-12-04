@@ -141,26 +141,23 @@ app.get("/api/balance/period", async (req, res) => {
 
 app.get("/api/investment", async (req, res) => {
   try {
-
     const investments = await prisma.transaction.aggregate({
-      _sum: {
-        amount: true
-      },
-      where: {
-        category: 'Investimento'
-      }
-    })
-     const investment = investments._sum.amount || 0;
+      _sum: { amount: true },
+      where: { category: "Investimento" }
+    });
 
-    res.status(200).json({
-      investido: investment
-    })
-    
+    const invested = Number(investments._sum.amount) || 0;
+
+    return res.status(200).json({ investido: invested });
+
   } catch (error) {
-    console.log(error)
-    res.status(500).send({message: 'Erro ao buscar os dados.'})
+    console.error("Erro ao buscar investimento:", error);
+    return res.status(500).json({
+      message: "Erro ao buscar os dados de investimento."
+    });
   }
-})
+});
+
 
 app.delete("/api/delete-transaction/:id", async (req, res) => {
   const { id } = req.params;
