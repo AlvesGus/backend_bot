@@ -150,6 +150,10 @@ app.get("/api/investment", async (req, res) => {
         category: 'Investimento'
       }
     })
+
+    res.status(200).json({
+      investido: investment
+    })
     
   } catch (error) {
     console.log(error)
