@@ -4,7 +4,6 @@ import { prisma } from "../lib/prisma.js";
 import "dotenv/config";
 import { category } from "@prisma/client";
 
-console.log("DATABASE_URL:", process.env.DATABASE_URL);
 
 const app = express();
 app.use(express.json());
@@ -21,17 +20,40 @@ app.get("/api/health", (req, res) => {
 
 app.get("/api/transactions", async (req, res) => {
   try {
+    const { month } = req.query;
+
+    let where = {};
+
+    if (month) {
+      const monthNumber = Number(month);
+
+      const year = new Date().getFullYear();
+
+      const startDate = new Date(year, monthNumber - 1, 1, 0, 0, 0);
+      const endDate = new Date(year, monthNumber, 0, 23, 59, 59);
+
+      where = {
+        createdAt: {
+          gte: startDate,
+          lte: endDate,
+        },
+      };
+    }
+
     const transactions = await prisma.transaction.findMany({
+      where,
       orderBy: {
         createdAt: "desc",
       },
     });
-    res.status(200).send(transactions);
+
+    res.status(200).json(transactions);
   } catch (error) {
-    console.log(error);
-    res.status(500).send({ error: "Failed to fetch transactions" });
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch transactions" });
   }
 });
+
 
 app.post("/api/add-transaction", async (req, res) => {
   const { title, amount, type, category, telegram_id, name_user } = req.body;
